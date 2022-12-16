@@ -1,7 +1,7 @@
 Inventory app
 ==================================
 
-Solution code for Android Basics with Compose.
+Starter code for Android Basics with Compose.
 
 Introduction
 ------------

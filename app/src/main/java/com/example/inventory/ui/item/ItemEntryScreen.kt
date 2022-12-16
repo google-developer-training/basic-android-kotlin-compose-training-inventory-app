@@ -26,7 +26,6 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -38,9 +37,7 @@ import com.example.inventory.R
 import com.example.inventory.ui.AppViewModelProvider
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.theme.InventoryTheme
-import kotlinx.coroutines.launch
-import java.util.Currency
-import java.util.Locale
+import java.util.*
 
 object ItemEntryDestination : NavigationDestination {
     override val route = "item_entry"
@@ -55,7 +52,6 @@ fun ItemEntryScreen(
     canNavigateBack: Boolean = true,
     viewModel: ItemEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val coroutineScope = rememberCoroutineScope()
     Scaffold(
         topBar = {
             InventoryTopAppBar(
@@ -68,16 +64,7 @@ fun ItemEntryScreen(
         ItemEntryBody(
             itemUiState = viewModel.itemUiState,
             onItemValueChange = viewModel::updateUiState,
-            onSaveClick = {
-                // Note: If the user rotates the screen very fast, the operation may get cancelled
-                // and the item may not be saved in the Database. This is because when config
-                // change occurs, the Activity will be recreated and the rememberCoroutineScope will
-                // be cancelled - since the scope is bound to composition.
-                coroutineScope.launch {
-                    viewModel.saveItem()
-                    navigateBack()
-                }
-            },
+            onSaveClick = { },
             modifier = modifier.padding(innerPadding)
         )
     }
@@ -86,7 +73,7 @@ fun ItemEntryScreen(
 @Composable
 fun ItemEntryBody(
     itemUiState: ItemUiState,
-    onItemValueChange: (ItemDetails) -> Unit,
+    onItemValueChange: (ItemUiState) -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -96,10 +83,10 @@ fun ItemEntryBody(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
-        ItemInputForm(itemDetails = itemUiState.itemDetails, onValueChange = onItemValueChange)
+        ItemInputForm(itemUiState = itemUiState, onValueChange = onItemValueChange)
         Button(
             onClick = onSaveClick,
-            enabled = itemUiState.isEntryValid,
+            enabled = itemUiState.actionEnabled,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(stringResource(R.string.save_action))
@@ -109,23 +96,23 @@ fun ItemEntryBody(
 
 @Composable
 fun ItemInputForm(
-    itemDetails: ItemDetails,
+    itemUiState: ItemUiState,
     modifier: Modifier = Modifier,
-    onValueChange: (ItemDetails) -> Unit = {},
+    onValueChange: (ItemUiState) -> Unit = {},
     enabled: Boolean = true
 ) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         OutlinedTextField(
-            value = itemDetails.name,
-            onValueChange = { onValueChange(itemDetails.copy(name = it)) },
+            value = itemUiState.name,
+            onValueChange = { onValueChange(itemUiState.copy(name = it)) },
             label = { Text(stringResource(R.string.item_name_req)) },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true
         )
         OutlinedTextField(
-            value = itemDetails.price,
-            onValueChange = { onValueChange(itemDetails.copy(price = it)) },
+            value = itemUiState.price,
+            onValueChange = { onValueChange(itemUiState.copy(price = it)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             label = { Text(stringResource(R.string.item_price_req)) },
             leadingIcon = { Text(Currency.getInstance(Locale.getDefault()).symbol) },
@@ -134,8 +121,8 @@ fun ItemInputForm(
             singleLine = true
         )
         OutlinedTextField(
-            value = itemDetails.quantity,
-            onValueChange = { onValueChange(itemDetails.copy(quantity = it)) },
+            value = itemUiState.quantity,
+            onValueChange = { onValueChange(itemUiState.copy(quantity = it)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             label = { Text(stringResource(R.string.quantity_req)) },
             modifier = Modifier.fillMaxWidth(),
@@ -151,11 +138,9 @@ private fun ItemEntryScreenPreview() {
     InventoryTheme {
         ItemEntryBody(
             itemUiState = ItemUiState(
-                ItemDetails(
-                    name = "Item name",
-                    price = "10.00",
-                    quantity = "5"
-                )
+                name = "Item name",
+                price = "10.00",
+                quantity = "5"
             ),
             onItemValueChange = {},
             onSaveClick = {}
