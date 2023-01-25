@@ -19,7 +19,7 @@ package com.example.inventory.ui.item
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.inventory.data.ItemsRepository
+import com.example.inventory.data.ItemRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -28,21 +28,21 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel to retrieve, update and delete an item from the [ItemsRepository]'s data source.
+ * ViewModel to retrieve, update and delete an item from the [ItemRepository]'s data source.
  */
 class ItemDetailsViewModel(
     savedStateHandle: SavedStateHandle,
-    private val itemsRepository: ItemsRepository,
+    private val itemRepository: ItemRepository,
 ) : ViewModel() {
 
     private val itemId: Int = checkNotNull(savedStateHandle[ItemDetailsDestination.itemIdArg])
 
     /**
-     * Holds the item details ui state. The data is retrieved from [ItemsRepository] and mapped to
+     * Holds the item details ui state. The data is retrieved from [ItemRepository] and mapped to
      * the UI state.
      */
     val uiState: StateFlow<ItemDetailsUiState> =
-        itemsRepository.getItemStream(itemId)
+        itemRepository.getItemStream(itemId)
             .filterNotNull()
             .map {
                 ItemDetailsUiState(outOfStock = it.quantity <= 0, itemDetails = it.toItemDetails())
@@ -53,22 +53,22 @@ class ItemDetailsViewModel(
             )
 
     /**
-     * Reduces the item quantity by one and update the [ItemsRepository]'s data source.
+     * Reduces the item quantity by one and update the [ItemRepository]'s data source.
      */
     fun reduceQuantityByOne() {
         viewModelScope.launch {
             val currentItem = uiState.value.itemDetails.toItem()
             if (currentItem.quantity > 0) {
-                itemsRepository.updateItem(currentItem.copy(quantity = currentItem.quantity - 1))
+                itemRepository.updateItem(currentItem.copy(quantity = currentItem.quantity - 1))
             }
         }
     }
 
     /**
-     * Deletes the item from the [ItemsRepository]'s data source.
+     * Deletes the item from the [ItemRepository]'s data source.
      */
     suspend fun deleteItem() {
-        itemsRepository.deleteItem(uiState.value.itemDetails.toItem())
+        itemRepository.deleteItem(uiState.value.itemDetails.toItem())
     }
 
     companion object {

@@ -22,17 +22,17 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.inventory.data.ItemsRepository
+import com.example.inventory.data.ItemRepository
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel to retrieve and update an item from the [ItemsRepository]'s data source.
+ * ViewModel to retrieve and update an item from the [ItemRepository]'s data source.
  */
 class ItemEditViewModel(
     savedStateHandle: SavedStateHandle,
-    private val itemsRepository: ItemsRepository
+    private val itemRepository: ItemRepository
 ) : ViewModel() {
 
     /**
@@ -45,7 +45,7 @@ class ItemEditViewModel(
 
     init {
         viewModelScope.launch {
-            itemUiState = itemsRepository.getItemStream(itemId)
+            itemUiState = itemRepository.getItemStream(itemId)
                 .filterNotNull()
                 .first()
                 .toItemUiState(true)
@@ -53,11 +53,11 @@ class ItemEditViewModel(
     }
 
     /**
-     * Update the item in the [ItemsRepository]'s data source
+     * Update the item in the [ItemRepository]'s data source
      */
     suspend fun updateItem() {
         if (validateInput(itemUiState.itemDetails)) {
-            itemsRepository.updateItem(itemUiState.itemDetails.toItem())
+            itemRepository.updateItem(itemUiState.itemDetails.toItem())
         }
     }
 
