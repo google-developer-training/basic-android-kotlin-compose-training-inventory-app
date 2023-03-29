@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.inventory.ui.theme
 
-import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.material3.Shapes
-import androidx.compose.ui.unit.dp
+package com.example.inventory.data
 
-val Shapes = Shapes(
+import kotlinx.coroutines.flow.Flow
 
-    extraSmall = CutCornerShape(topEnd = 8.dp, bottomStart = 8.dp),
-    small = CutCornerShape(topEnd = 8.dp, bottomStart = 8.dp),
-    medium = CutCornerShape(topEnd = 16.dp, bottomStart = 16.dp)
-)
+class OfflineItemsRepository(private val itemDao: ItemDao) : ItemsRepository {
+    override fun getAllItemsStream(): Flow<List<Item>> = itemDao.getAllItems()
+
+    override fun getItemStream(id: Int): Flow<Item?> = itemDao.getItem(id)
+
+    override suspend fun insertItem(item: Item) = itemDao.insert(item)
+
+    override suspend fun deleteItem(item: Item) = itemDao.delete(item)
+
+    override suspend fun updateItem(item: Item) = itemDao.update(item)
+}

@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.inventory.ui.theme
 
-import androidx.compose.material3.Typography
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+package com.example.inventory.ui.navigation
 
-// Set of Material typography styles to start with
-val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    )
-)
+/**
+ * Interface to describe the navigation destinations for the app
+ */
+interface NavigationDestination {
+    /**
+     * Unique name to define the path for a composable
+     */
+    val route: String
+
+    /**
+     * String resource id to that contains title to be displayed for the screen.
+     */
+    val titleRes: Int
+}
