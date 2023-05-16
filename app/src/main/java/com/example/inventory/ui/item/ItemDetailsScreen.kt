@@ -134,7 +134,6 @@ private fun ItemDetailsBody(
             onClick = onSellItem,
             modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.small,
-
             enabled = !itemDetailsUiState.outOfStock
         ) {
             Text(stringResource(R.string.sell))
@@ -152,7 +151,7 @@ private fun ItemDetailsBody(
                 onDelete()
             },
                 onDeleteCancel = { deleteConfirmationRequired = false },
-                modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
             )
         }
     }
@@ -178,17 +177,20 @@ fun ItemDetails(
             ItemDetailsRow(
                 labelResID = R.string.item,
                 itemDetail = item.name,
-                modifier = modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_medium))
+                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen
+                    .padding_medium))
             )
             ItemDetailsRow(
                 labelResID = R.string.quantity_in_stock,
                 itemDetail = item.quantity.toString(),
-                modifier = modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_medium))
+                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen
+                    .padding_medium))
             )
             ItemDetailsRow(
                 labelResID = R.string.price,
                 itemDetail = item.formatedPrice(),
-                modifier = modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_medium))
+                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen
+                    .padding_medium))
             )
         }
 
