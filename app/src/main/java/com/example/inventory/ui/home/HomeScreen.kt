@@ -95,7 +95,7 @@ fun HomeScreen(
         HomeBody(
             itemList = listOf(),
             onItemClick = navigateToItemUpdate,
-            modifier = modifier
+            modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
         )
@@ -145,7 +145,8 @@ private fun InventoryItem(
     item: Item, modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier, elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        modifier = modifier,
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large)),
