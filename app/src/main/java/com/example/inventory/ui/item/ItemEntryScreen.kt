@@ -107,7 +107,7 @@ fun ItemEntryBody(
             shape = MaterialTheme.shapes.small,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = stringResource(R.string.save_action))
+            Text(stringResource(R.string.save_action))
         }
     }
 }
