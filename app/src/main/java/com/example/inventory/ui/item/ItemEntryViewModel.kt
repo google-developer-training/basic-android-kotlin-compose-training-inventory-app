@@ -91,8 +91,6 @@ fun Item.formatedPrice(): String {
     return NumberFormat.getCurrencyInstance().format(price)
 }
 
-
-
 /**
  * Extension function to convert [Item] to [ItemUiState]
  */
