@@ -24,7 +24,7 @@ import com.example.inventory.data.Item
 import java.text.NumberFormat
 
 /**
- * View Model to validate and insert items in the Room database.
+ * ViewModel to validate and insert items in the Room database.
  */
 class ItemEntryViewModel : ViewModel() {
 

@@ -20,7 +20,7 @@ import androidx.lifecycle.ViewModel
 import com.example.inventory.data.Item
 
 /**
- * View Model to retrieve all items in the Room database.
+ * ViewModel to retrieve all items in the Room database.
  */
 class HomeViewModel : ViewModel() {
     companion object {
