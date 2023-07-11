@@ -30,4 +30,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Inventory"
-include ("app")
+include(":app")
