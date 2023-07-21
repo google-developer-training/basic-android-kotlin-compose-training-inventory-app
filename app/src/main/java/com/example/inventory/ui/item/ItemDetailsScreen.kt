@@ -31,6 +31,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -66,6 +67,7 @@ object ItemDetailsDestination : NavigationDestination {
     val routeWithArgs = "$route/{$itemIdArg}"
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemDetailsScreen(
     navigateToEditItem: (Int) -> Unit,
@@ -75,25 +77,26 @@ fun ItemDetailsScreen(
 ) {
     val uiState = viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
-    Scaffold(topBar = {
-        InventoryTopAppBar(
-            title = stringResource(ItemDetailsDestination.titleRes),
-            canNavigateBack = true,
-            navigateUp = navigateBack
-        )
-    }, floatingActionButton = {
-        FloatingActionButton(
-            onClick = { navigateToEditItem(uiState.value.itemDetails.id) },
-            shape = MaterialTheme.shapes.medium,
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
-
-        ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = stringResource(R.string.edit_item_title),
+    Scaffold(
+        topBar = {
+            InventoryTopAppBar(
+                title = stringResource(ItemDetailsDestination.titleRes),
+                canNavigateBack = true,
+                navigateUp = navigateBack
             )
-        }
-    }, modifier = modifier
+        }, floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navigateToEditItem(uiState.value.itemDetails.id) },
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
+
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = stringResource(R.string.edit_item_title),
+                )
+            }
+        }, modifier = modifier
     ) { innerPadding ->
         ItemDetailsBody(
             itemDetailsUiState = uiState.value,
@@ -111,7 +114,7 @@ fun ItemDetailsScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-            )
+        )
     }
 }
 
@@ -146,10 +149,11 @@ private fun ItemDetailsBody(
             Text(stringResource(R.string.delete))
         }
         if (deleteConfirmationRequired) {
-            DeleteConfirmationDialog(onDeleteConfirm = {
-                deleteConfirmationRequired = false
-                onDelete()
-            },
+            DeleteConfirmationDialog(
+                onDeleteConfirm = {
+                    deleteConfirmationRequired = false
+                    onDelete()
+                },
                 onDeleteCancel = { deleteConfirmationRequired = false },
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
             )
@@ -177,20 +181,32 @@ fun ItemDetails(
             ItemDetailsRow(
                 labelResID = R.string.item,
                 itemDetail = item.name,
-                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen
-                    .padding_medium))
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(
+                        id = R.dimen
+                            .padding_medium
+                    )
+                )
             )
             ItemDetailsRow(
                 labelResID = R.string.quantity_in_stock,
                 itemDetail = item.quantity.toString(),
-                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen
-                    .padding_medium))
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(
+                        id = R.dimen
+                            .padding_medium
+                    )
+                )
             )
             ItemDetailsRow(
                 labelResID = R.string.price,
                 itemDetail = item.formatedPrice(),
-                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen
-                    .padding_medium))
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(
+                        id = R.dimen
+                            .padding_medium
+                    )
+                )
             )
         }
 
