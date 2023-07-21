@@ -31,6 +31,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -61,31 +62,34 @@ object ItemDetailsDestination : NavigationDestination {
     val routeWithArgs = "$route/{$itemIdArg}"
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemDetailsScreen(
     navigateToEditItem: (Int) -> Unit,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(topBar = {
-        InventoryTopAppBar(
-            title = stringResource(ItemDetailsDestination.titleRes),
-            canNavigateBack = true,
-            navigateUp = navigateBack
-        )
-    }, floatingActionButton = {
-        FloatingActionButton(
-            onClick = { navigateToEditItem(0) },
-            shape = MaterialTheme.shapes.medium,
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
-
-        ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = stringResource(R.string.edit_item_title),
+    Scaffold(
+        topBar = {
+            InventoryTopAppBar(
+                title = stringResource(ItemDetailsDestination.titleRes),
+                canNavigateBack = true,
+                navigateUp = navigateBack
             )
-        }
-    }, modifier = modifier
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navigateToEditItem(0) },
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
+
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = stringResource(R.string.edit_item_title),
+                )
+            }
+        }, modifier = modifier
     ) { innerPadding ->
         ItemDetailsBody(
             itemDetailsUiState = ItemDetailsUiState(),
