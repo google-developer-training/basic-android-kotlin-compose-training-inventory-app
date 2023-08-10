@@ -134,8 +134,7 @@ fun InventoryTheme(
 private fun setUpEdgeToEdge(view: View, darkTheme: Boolean) {
     val window = (view.context as Activity).window
     WindowCompat.setDecorFitsSystemWindows(window, false)
-//    window.statusBarColor = Color.Transparent.toArgb()
-    window.statusBarColor = Color(0xFF, 0xFF, 0xFF, 0x63).toArgb()
+    window.statusBarColor = Color.Transparent.toArgb()
     val navigationBarColor = when {
         Build.VERSION.SDK_INT >= 29 -> Color.Transparent.toArgb()
         Build.VERSION.SDK_INT >= 26 -> Color(0xFF, 0xFF, 0xFF, 0x63).toArgb()
