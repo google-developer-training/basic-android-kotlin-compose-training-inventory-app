@@ -117,13 +117,14 @@ private fun HomeBody(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
+        modifier = modifier,
     ) {
         if (itemList.isEmpty()) {
             Text(
                 text = stringResource(R.string.no_item_description),
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(contentPadding),
             )
         } else {
             InventoryList(
