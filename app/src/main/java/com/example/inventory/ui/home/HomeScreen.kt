@@ -96,8 +96,8 @@ fun HomeScreen(
         HomeBody(
             itemList = listOf(),
             onItemClick = navigateToItemUpdate,
-            contentPadding = innerPadding,
             modifier = modifier.fillMaxSize(),
+            contentPadding = innerPadding,
         )
     }
 }
@@ -138,7 +138,10 @@ private fun InventoryList(
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(contentPadding = contentPadding, modifier = modifier) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = contentPadding
+    ) {
         items(items = itemList, key = { it.id }) { item ->
             InventoryItem(item = item,
                 modifier = Modifier
