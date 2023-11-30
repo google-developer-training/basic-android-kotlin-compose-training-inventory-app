@@ -96,11 +96,10 @@ fun ItemDetailsScreen(
                 onClick = { navigateToEditItem(uiState.value.itemDetails.id) },
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier
-                        .padding(
-                            end = WindowInsets.safeDrawing.asPaddingValues()
-                                .calculateEndPadding(LocalLayoutDirection.current)
-                        )
-
+                    .padding(
+                        end = WindowInsets.safeDrawing.asPaddingValues()
+                            .calculateEndPadding(LocalLayoutDirection.current)
+                    )
             ) {
                 Icon(
                     imageVector = Icons.Default.Edit,
