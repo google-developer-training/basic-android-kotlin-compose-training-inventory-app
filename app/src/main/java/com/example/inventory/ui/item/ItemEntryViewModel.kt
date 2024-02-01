@@ -57,11 +57,11 @@ class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewMod
         }
     }
 
-    fun validateDecimalInputText(inputText: String): Boolean {
+    private fun validateDecimalInputText(inputText: String): Boolean {
         return inputText.matches(DECIMAL_REGEX)
     }
 
-    fun validateNumberInputText(inputText: String): Boolean {
+    private fun validateNumberInputText(inputText: String): Boolean {
         return inputText.matches(NUMBER_REGEX)
     }
 
