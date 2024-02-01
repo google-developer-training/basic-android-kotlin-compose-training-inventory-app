@@ -46,7 +46,18 @@ class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewMod
      */
     fun updateUiState(itemDetails: ItemDetails) {
         itemUiState =
-            ItemUiState(itemDetails = itemDetails, isEntryValid = validateInput(itemDetails))
+            ItemUiState(
+                itemDetails = itemDetails,
+                isEntryValid = validateInput(itemDetails)
+            )
+    }
+
+    fun validateDecimalInputText(inputText: String): Boolean {
+        return inputText.matches(DECIMAL_REGEX)
+    }
+
+    fun validateNumberInputText(inputText: String): Boolean {
+        return inputText.matches(NUMBER_REGEX)
     }
 
     /**
