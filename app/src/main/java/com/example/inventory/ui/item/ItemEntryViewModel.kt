@@ -45,11 +45,16 @@ class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewMod
      * a validation for input values.
      */
     fun updateUiState(itemDetails: ItemDetails) {
-        itemUiState =
-            ItemUiState(
-                itemDetails = itemDetails,
-                isEntryValid = validateInput(itemDetails)
-            )
+        if (
+            validateDecimalInputText(itemDetails.price)
+                .and(validateNumberInputText(itemDetails.quantity))
+        ) {
+            itemUiState =
+                ItemUiState(
+                    itemDetails = itemDetails,
+                    isEntryValid = validateInput(itemDetails)
+                )
+        }
     }
 
     fun validateDecimalInputText(inputText: String): Boolean {
