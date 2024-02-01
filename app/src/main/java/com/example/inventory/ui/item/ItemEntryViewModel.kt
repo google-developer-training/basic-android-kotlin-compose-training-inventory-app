@@ -29,6 +29,11 @@ import java.text.NumberFormat
  */
 class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewModel() {
 
+    companion object {
+        private val DECIMAL_REGEX = "^\\d*\\.?\\d*$".toRegex()
+        private val NUMBER_REGEX = "^\\d*$".toRegex()
+    }
+
     /**
      * Holds current item ui state
      */
