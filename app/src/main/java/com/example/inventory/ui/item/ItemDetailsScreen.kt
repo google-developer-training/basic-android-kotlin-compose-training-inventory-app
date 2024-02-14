@@ -21,8 +21,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -47,6 +52,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -84,19 +90,24 @@ fun ItemDetailsScreen(
                 canNavigateBack = true,
                 navigateUp = navigateBack
             )
-        }, floatingActionButton = {
+        },
+        floatingActionButton = {
             FloatingActionButton(
                 onClick = { navigateToEditItem(uiState.value.itemDetails.id) },
                 shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
-
+                modifier = Modifier
+                    .padding(
+                        end = WindowInsets.safeDrawing.asPaddingValues()
+                            .calculateEndPadding(LocalLayoutDirection.current)
+                    )
             ) {
                 Icon(
                     imageVector = Icons.Default.Edit,
                     contentDescription = stringResource(R.string.edit_item_title),
                 )
             }
-        }, modifier = modifier
+        },
+        modifier = modifier,
     ) { innerPadding ->
         ItemDetailsBody(
             itemDetailsUiState = uiState.value,
@@ -112,7 +123,11 @@ fun ItemDetailsScreen(
                 }
             },
             modifier = Modifier
-                .padding(innerPadding)
+                .padding(
+                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
+                    top = innerPadding.calculateTopPadding(),
+                    end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
+                )
                 .verticalScroll(rememberScrollState())
         )
     }
