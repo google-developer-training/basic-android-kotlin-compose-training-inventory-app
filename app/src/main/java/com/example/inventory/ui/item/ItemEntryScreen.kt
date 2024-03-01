@@ -18,6 +18,8 @@ package com.example.inventory.ui.item
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -30,9 +32,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -73,7 +75,11 @@ fun ItemEntryScreen(
             onItemValueChange = viewModel::updateUiState,
             onSaveClick = { },
             modifier = Modifier
-                .padding(innerPadding)
+                .padding(
+                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
+                    end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
+                    top = innerPadding.calculateTopPadding()
+                )
                 .verticalScroll(rememberScrollState())
                 .fillMaxWidth()
         )
@@ -107,7 +113,6 @@ fun ItemEntryBody(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemInputForm(
     itemDetails: ItemDetails,

@@ -16,10 +16,10 @@
 
 package com.example.inventory.ui.home
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -63,7 +63,6 @@ object HomeDestination : NavigationDestination {
  * Entry route for Home screen
  */
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
     navigateToItemEntry: () -> Unit,
@@ -97,31 +96,35 @@ fun HomeScreen(
         HomeBody(
             itemList = listOf(),
             onItemClick = navigateToItemUpdate,
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
+            modifier = modifier.fillMaxSize(),
+            contentPadding = innerPadding,
         )
     }
 }
 
 @Composable
 private fun HomeBody(
-    itemList: List<Item>, onItemClick: (Int) -> Unit, modifier: Modifier = Modifier
+    itemList: List<Item>,
+    onItemClick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
+        modifier = modifier,
     ) {
         if (itemList.isEmpty()) {
             Text(
                 text = stringResource(R.string.no_item_description),
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(contentPadding),
             )
         } else {
             InventoryList(
                 itemList = itemList,
                 onItemClick = { onItemClick(it.id) },
+                contentPadding = contentPadding,
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
             )
         }
@@ -130,9 +133,15 @@ private fun HomeBody(
 
 @Composable
 private fun InventoryList(
-    itemList: List<Item>, onItemClick: (Item) -> Unit, modifier: Modifier = Modifier
+    itemList: List<Item>,
+    onItemClick: (Item) -> Unit,
+    contentPadding: PaddingValues,
+    modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = contentPadding
+    ) {
         items(items = itemList, key = { it.id }) { item ->
             InventoryItem(item = item,
                 modifier = Modifier
