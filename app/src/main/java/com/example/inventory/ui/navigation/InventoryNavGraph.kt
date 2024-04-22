@@ -87,6 +87,7 @@ fun InventoryNavHost(
             )
         ) { backStackEntry ->
             PurchaseConfirmationScreen(
+                navController = navController,
                 purchaseDetails = PurchaseDetails(
                     productName = backStackEntry.arguments?.getString("productName") ?: "",
                     pricePerItem = backStackEntry.arguments?.getString("pricePerItem") ?: "",

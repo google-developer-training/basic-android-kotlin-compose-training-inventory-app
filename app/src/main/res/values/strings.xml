@@ -39,4 +39,5 @@
     <string name="quantity">quantity</string>
     <string name="total_cost">total_cost</string>
     <string name="quantity_ordered">quantity_ordered\n</string>
+    <string name="purchase_confirmation_title">Confirmed Purchase</string>
 </resources>
