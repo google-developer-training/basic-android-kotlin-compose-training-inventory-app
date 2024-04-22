@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2023 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.example.inventory.ui.item
 
 import androidx.annotation.StringRes
@@ -29,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -41,6 +26,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -51,19 +37,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.inventory.InventoryTopAppBar
 import com.example.inventory.R
 import com.example.inventory.data.Item
 import com.example.inventory.ui.AppViewModelProvider
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.theme.InventoryTheme
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 object ItemDetailsDestination : NavigationDestination {
@@ -78,11 +69,15 @@ object ItemDetailsDestination : NavigationDestination {
 fun ItemDetailsScreen(
     navigateToEditItem: (Int) -> Unit,
     navigateBack: () -> Unit,
+    navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: ItemDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val uiState = viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState() // Collect the UI state
+    //val itemDetails = uiState.itemDetails // Access the item details
+
     val coroutineScope = rememberCoroutineScope()
+
     Scaffold(
         topBar = {
             InventoryTopAppBar(
@@ -93,7 +88,7 @@ fun ItemDetailsScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navigateToEditItem(uiState.value.itemDetails.id) },
+                onClick = { navigateToEditItem(uiState.itemDetails.id) },
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier
                     .padding(
@@ -110,7 +105,7 @@ fun ItemDetailsScreen(
         modifier = modifier,
     ) { innerPadding ->
         ItemDetailsBody(
-            itemDetailsUiState = uiState.value,
+            itemDetailsUiState = uiState,
             onSellItem = { viewModel.reduceQuantityByOne() },
             onDelete = {
                 // Note: If the user rotates the screen very fast, the operation may get cancelled
@@ -122,6 +117,13 @@ fun ItemDetailsScreen(
                     navigateBack()
                 }
             },
+            onBuyItem = { quantity ->
+                viewModel.submitOrder(quantity)
+            },
+            navController = navController,
+            coroutineScope = coroutineScope,
+            itemDetails = uiState.itemDetails,
+            viewModel = viewModel,
             modifier = Modifier
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
@@ -138,16 +140,62 @@ private fun ItemDetailsBody(
     itemDetailsUiState: ItemDetailsUiState,
     onSellItem: () -> Unit,
     onDelete: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+    onBuyItem: (Int) -> Unit,
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    coroutineScope: CoroutineScope,
+    viewModel: ItemDetailsViewModel,
+    itemDetails: ItemDetails,
+
+    ) {
+    var quantity by rememberSaveable { mutableStateOf(1) }
+
+    val item = itemDetailsUiState.itemDetails.toItem()
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
     ) {
         var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
         ItemDetails(
-            item = itemDetailsUiState.itemDetails.toItem(), modifier = Modifier.fillMaxWidth()
+            item = itemDetailsUiState.itemDetails.toItem(), modifier = Modifier.fillMaxWidth(),
+
         )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            var quantity by rememberSaveable { mutableStateOf(1) }
+            OutlinedTextField(
+                value = quantity.toString(),
+                onValueChange = { newQuantity -> quantity = newQuantity.toIntOrNull() ?: 1 },
+                label = { Text(stringResource(R.string.quantity)) },
+                modifier = Modifier.weight(1f),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number
+                ),
+                singleLine = true
+            )
+            Button(
+                onClick = {
+                    coroutineScope.launch {
+                        // Use the state directly. There is no 'value' property needed.
+                        val quantityInt = quantity
+                        viewModel.submitOrder(quantityInt)
+
+                        // Use the uiState directly. Again, no 'value' property is needed.
+
+                        val totalCost = item.price * quantityInt
+                        navController.navigate(
+                            "purchaseConfirmation/${item.name}/${item.price}/$quantityInt/$totalCost/${item.quantity - quantityInt}"
+                        )
+                    }
+                },
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_medium)),
+                shape = MaterialTheme.shapes.small,
+            ) {
+                Text(stringResource(R.string.buy))
+            }
+        }
         Button(
             onClick = onSellItem,
             modifier = Modifier.fillMaxWidth(),
@@ -259,12 +307,21 @@ private fun DeleteConfirmationDialog(
         })
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ItemDetailsScreenPreview() {
-    InventoryTheme {
-        ItemDetailsBody(ItemDetailsUiState(
-            outOfStock = true, itemDetails = ItemDetails(1, "Pen", "$100", "10")
-        ), onSellItem = {}, onDelete = {})
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun ItemDetailsScreenPreview() {
+//    InventoryTheme {
+//        val mockNavController = rememberNavController() // Create a mock NavController
+//        ItemDetailsBody(
+//            itemDetailsUiState = ItemDetailsUiState(
+//                outOfStock = true,
+//                itemDetails = ItemDetails(1, "Pen", "$100", "10")
+//            ),
+//            onSellItem = {},
+//            onDelete = {},
+//            onBuyItem = { _ -> },
+//            navController = mockNavController, // Use the mock NavController
+//            modifier = Modifier
+//        )
+//    }
+//}

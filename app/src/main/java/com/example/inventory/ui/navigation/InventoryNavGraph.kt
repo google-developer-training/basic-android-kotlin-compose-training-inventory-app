@@ -23,6 +23,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.inventory.data.PurchaseDetails
+import com.example.inventory.ui.ConfirmationPage.PurchaseConfirmationScreen
 import com.example.inventory.ui.home.HomeDestination
 import com.example.inventory.ui.home.HomeScreen
 import com.example.inventory.ui.item.ItemDetailsDestination
@@ -66,20 +68,32 @@ fun InventoryNavHost(
                 type = NavType.IntType
             })
         ) {
+            // Pass navController to ItemDetailsScreen
             ItemDetailsScreen(
-                navigateToEditItem = { navController.navigate("${ItemEditDestination.route}/$it") },
-                navigateBack = { navController.navigateUp() }
+                navigateToEditItem = { itemId ->
+                    navController.navigate("${ItemEditDestination.route}/$itemId")
+                },
+                navigateBack = { navController.navigateUp() },
+                navController = navController // Add this line
             )
         }
-        composable(
-            route = ItemEditDestination.routeWithArgs,
-            arguments = listOf(navArgument(ItemEditDestination.itemIdArg) {
-                type = NavType.IntType
-            })
-        ) {
-            ItemEditScreen(
-                navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() }
+        composable(route = "purchaseConfirmation/{productName}/{pricePerItem}/{quantityOrdered}/{totalCost}/{itemsLeftInInventory}",
+            arguments = listOf(
+                navArgument("productName") { type = NavType.StringType },
+                navArgument("pricePerItem") { type = NavType.StringType },
+                navArgument("quantityOrdered") { type = NavType.IntType },
+                navArgument("totalCost") { type = NavType.StringType },
+                navArgument("itemsLeftInInventory") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            PurchaseConfirmationScreen(
+                purchaseDetails = PurchaseDetails(
+                    productName = backStackEntry.arguments?.getString("productName") ?: "",
+                    pricePerItem = backStackEntry.arguments?.getString("pricePerItem") ?: "",
+                    quantityOrdered = backStackEntry.arguments?.getInt("quantityOrdered") ?: 0,
+                    totalCost = backStackEntry.arguments?.getString("totalCost") ?: "",
+                    itemsLeftInInventory = backStackEntry.arguments?.getInt("itemsLeftInInventory") ?: 0
+                )
             )
         }
     }
