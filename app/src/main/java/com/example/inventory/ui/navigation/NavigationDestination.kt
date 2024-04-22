@@ -16,6 +16,8 @@
 
 package com.example.inventory.ui.navigation
 
+import com.example.inventory.R
+
 /**
  * Interface to describe the navigation destinations for the app
  */
@@ -29,4 +31,8 @@ interface NavigationDestination {
      * String resource id to that contains title to be displayed for the screen.
      */
     val titleRes: Int
+}
+object HomeDestination : NavigationDestination {
+    override val route = "home"
+    override val titleRes = R.string.app_name
 }

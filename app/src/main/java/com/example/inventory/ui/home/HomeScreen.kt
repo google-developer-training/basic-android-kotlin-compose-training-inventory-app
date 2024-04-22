@@ -17,44 +17,29 @@
 package com.example.inventory.ui.home
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.inventory.InventoryTopAppBar
 import com.example.inventory.R
 import com.example.inventory.data.Item
@@ -67,27 +52,26 @@ object HomeDestination : NavigationDestination {
     override val route = "home"
     override val titleRes = R.string.app_name
 }
-
-/**
- * Entry route for Home screen
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    navController: NavController,
     navigateToItemEntry: () -> Unit,
     navigateToItemUpdate: (Int) -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    modifier: Modifier = Modifier
 ) {
     val homeUiState by viewModel.homeUiState.collectAsState()
+    val searchTextState = remember { mutableStateOf("") }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             InventoryTopAppBar(
-                title = stringResource(HomeDestination.titleRes),
-                canNavigateBack = false,
+                title = stringResource(id = R.string.app_name),
+                canNavigateBack = navController.previousBackStackEntry != null,
+                navigateUp = { navController.navigateUp() },
                 scrollBehavior = scrollBehavior
             )
         },
@@ -96,23 +80,19 @@ fun HomeScreen(
                 onClick = navigateToItemEntry,
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier
-                    .padding(
-                        end = WindowInsets.safeDrawing.asPaddingValues()
-                            .calculateEndPadding(LocalLayoutDirection.current)
-                    )
+                    .padding(end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(LocalLayoutDirection.current))
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.item_entry_title)
-                )
+                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.item_entry_title))
             }
         },
     ) { innerPadding ->
         HomeBody(
             itemList = homeUiState.itemList,
             onItemClick = navigateToItemUpdate,
-            modifier = modifier.fillMaxSize(),
-            contentPadding = innerPadding,
+            searchTextState = searchTextState,
+            onSearchTriggered = { searchText -> viewModel.searchProduct(searchText) },
+            modifier = Modifier.padding(innerPadding).fillMaxSize(),
+            contentPadding = PaddingValues(top = 8.dp)
         )
     }
 }
@@ -121,47 +101,46 @@ fun HomeScreen(
 private fun HomeBody(
     itemList: List<Item>,
     onItemClick: (Int) -> Unit,
+    searchTextState: MutableState<String>,
+    onSearchTriggered: (String) -> Unit,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(0.dp),
+    contentPadding: PaddingValues
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier,
-    ) {
+    Column(modifier = modifier.padding(contentPadding)) {
+        OutlinedTextField(
+            value = searchTextState.value,
+            onValueChange = {
+                searchTextState.value = it
+                onSearchTriggered(it)
+            },
+            label = { Text("Search by ID or Name") },
+            singleLine = true,
+            trailingIcon = {
+                IconButton(onClick = { onSearchTriggered(searchTextState.value) }) {
+                    Icon(Icons.Filled.Search, contentDescription = "Search")
+                }
+            },
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(onSearch = {
+                onSearchTriggered(searchTextState.value)
+            }),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+        )
         if (itemList.isEmpty()) {
             Text(
                 text = stringResource(R.string.no_item_description),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(contentPadding),
+                modifier = Modifier.padding(16.dp)
             )
         } else {
-            InventoryList(
-                itemList = itemList,
-                onItemClick = { onItemClick(it.id) },
-                contentPadding = contentPadding,
-                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
-            )
-        }
-    }
-}
-
-@Composable
-private fun InventoryList(
-    itemList: List<Item>,
-    onItemClick: (Item) -> Unit,
-    contentPadding: PaddingValues,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = contentPadding
-    ) {
-        items(items = itemList, key = { it.id }) { item ->
-            InventoryItem(item = item,
-                modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.padding_small))
-                    .clickable { onItemClick(item) })
+            LazyColumn(modifier = Modifier.padding(top = 8.dp)) {
+                items(items = itemList, key = { it.id }) { item ->
+                    InventoryItem(item = item, modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                        .clickable { onItemClick(item.id) })
+                }
+            }
         }
     }
 }
@@ -174,8 +153,8 @@ private fun InventoryItem(
         modifier = modifier, elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large)),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_small))
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth()
@@ -198,21 +177,39 @@ private fun InventoryItem(
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
 fun HomeBodyPreview() {
+    val mockItems = listOf(
+        Item(1, "Game", 100.0, 20),
+        Item(2, "Pen", 200.0, 30),
+        Item(3, "TV", 300.0, 50)
+    )
+    val searchTextState = remember { mutableStateOf("") }
     InventoryTheme {
-        HomeBody(listOf(
-            Item(1, "Game", 100.0, 20), Item(2, "Pen", 200.0, 30), Item(3, "TV", 300.0, 50)
-        ), onItemClick = {})
+        HomeBody(
+            itemList = mockItems,
+            onItemClick = {},  // You might need to handle navigation or actions in real previews
+            searchTextState = searchTextState,
+            onSearchTriggered = {},
+            contentPadding = PaddingValues(16.dp)
+        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun HomeBodyEmptyListPreview() {
+    val searchTextState = remember { mutableStateOf("") }
     InventoryTheme {
-        HomeBody(listOf(), onItemClick = {})
+        HomeBody(
+            itemList = listOf(),
+            onItemClick = {},  // No navigation handling necessary for preview
+            searchTextState = searchTextState,
+            onSearchTriggered = {},
+            contentPadding = PaddingValues(16.dp)
+        )
     }
 }
 
@@ -225,3 +222,4 @@ fun InventoryItemPreview() {
         )
     }
 }
+

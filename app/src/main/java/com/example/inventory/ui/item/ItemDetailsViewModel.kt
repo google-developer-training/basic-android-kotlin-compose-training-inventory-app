@@ -63,6 +63,13 @@ class ItemDetailsViewModel(
             }
         }
     }
+    fun submitOrder(quantity: Int) {
+        viewModelScope.launch {
+            val currentItem = uiState.value.itemDetails.toItem()
+            // You might need to create an order object or update the item based on the business logic.
+        }
+    }
+
 
     /**
      * Deletes the item from the [ItemsRepository]'s data source.
