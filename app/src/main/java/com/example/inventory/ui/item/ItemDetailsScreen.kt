@@ -57,6 +57,12 @@ import com.example.inventory.R
 import com.example.inventory.data.Item
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.theme.InventoryTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.inventory.ui.AppViewModelProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+
 
 object ItemDetailsDestination : NavigationDestination {
     override val route = "item_details"
@@ -70,8 +76,11 @@ object ItemDetailsDestination : NavigationDestination {
 fun ItemDetailsScreen(
     navigateToEditItem: (Int) -> Unit,
     navigateBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ItemDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val uiState = viewModel.uiState.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
     Scaffold(
         topBar = {
             InventoryTopAppBar(
@@ -94,16 +103,15 @@ fun ItemDetailsScreen(
         }, modifier = modifier
     ) { innerPadding ->
         ItemDetailsBody(
-            itemDetailsUiState = ItemDetailsUiState(),
-            onSellItem = { },
-            onDelete = { },
-            modifier = Modifier
-                .padding(
-                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
-                    end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
-                    top = innerPadding.calculateTopPadding()
-                )
-                .verticalScroll(rememberScrollState())
+            itemDetailsUiState = uiState.value,
+            onSellItem = { viewModel.reduceQuantityByOne() },
+            onDelete = {
+                coroutineScope.launch {
+                    viewModel.deleteItem()
+                    navigateBack()
+                }
+            },
+            modifier = modifier.padding(innerPadding)
         )
     }
 }
