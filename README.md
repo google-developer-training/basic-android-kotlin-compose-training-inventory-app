@@ -27,3 +27,8 @@ Getting Started
 ---------------
 
 1. Download and run the app.
+
+Update Theme Fadhil
+-------------------
+
+![Inventory](https://github.com/user-attachments/assets/9447142a-9e2a-4a96-971d-79fe8343b253)
