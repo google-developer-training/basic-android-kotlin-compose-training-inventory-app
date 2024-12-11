@@ -29,6 +29,11 @@ import java.text.NumberFormat
  */
 class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewModel() {
 
+    companion object {
+        private val DECIMAL_REGEX = "^\\d*\\.?\\d*$".toRegex()
+        private val NUMBER_REGEX = "^\\d*$".toRegex()
+    }
+
     /**
      * Holds current item ui state
      */
@@ -40,8 +45,24 @@ class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewMod
      * a validation for input values.
      */
     fun updateUiState(itemDetails: ItemDetails) {
-        itemUiState =
-            ItemUiState(itemDetails = itemDetails, isEntryValid = validateInput(itemDetails))
+        if (
+            validateDecimalInputText(itemDetails.price)
+                .and(validateNumberInputText(itemDetails.quantity))
+        ) {
+            itemUiState =
+                ItemUiState(
+                    itemDetails = itemDetails,
+                    isEntryValid = validateInput(itemDetails)
+                )
+        }
+    }
+
+    private fun validateDecimalInputText(inputText: String): Boolean {
+        return inputText.matches(DECIMAL_REGEX)
+    }
+
+    private fun validateNumberInputText(inputText: String): Boolean {
+        return inputText.matches(NUMBER_REGEX)
     }
 
     /**
