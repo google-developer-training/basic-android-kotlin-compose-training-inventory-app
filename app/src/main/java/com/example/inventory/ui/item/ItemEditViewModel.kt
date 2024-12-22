@@ -23,6 +23,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.ItemsRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -55,9 +56,10 @@ class ItemEditViewModel(
     /**
      * Update the item in the [ItemsRepository]'s data source
      */
-    suspend fun updateItem() {
-        if (validateInput(itemUiState.itemDetails)) {
-            itemsRepository.updateItem(itemUiState.itemDetails.toItem())
+     fun updateItem() {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (validateInput())
+                itemsRepository.updateItem(itemUiState.itemDetails.toItem())
         }
     }
 
