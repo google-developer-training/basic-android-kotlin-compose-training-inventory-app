@@ -20,8 +20,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.Item
 import com.example.inventory.data.ItemsRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.NumberFormat
 
 /**
@@ -47,9 +50,10 @@ class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewMod
     /**
      * Inserts an [Item] in the Room database
      */
-    suspend fun saveItem() {
-        if (validateInput()) {
-            itemsRepository.insertItem(itemUiState.itemDetails.toItem())
+     fun saveItem() {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (validateInput())
+                itemsRepository.insertItem(itemUiState.itemDetails.toItem())
         }
     }
 

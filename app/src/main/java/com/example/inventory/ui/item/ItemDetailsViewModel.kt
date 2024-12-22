@@ -20,6 +20,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.ItemsRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -67,8 +68,10 @@ class ItemDetailsViewModel(
     /**
      * Deletes the item from the [ItemsRepository]'s data source.
      */
-    suspend fun deleteItem() {
-        itemsRepository.deleteItem(uiState.value.itemDetails.toItem())
+     fun deleteItem() {
+        viewModelScope.launch(Dispatchers.IO) {
+            itemsRepository.deleteItem(uiState.value.itemDetails.toItem())
+        }
     }
 
     companion object {
