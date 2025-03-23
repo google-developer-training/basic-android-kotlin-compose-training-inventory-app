@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.Flow
  */
 interface ItemsRepository {
     /**
-     * Retrieve all the items from the the given data source.
+     * Retrieve all the items from the given data source.
      */
     fun getAllItemsStream(): Flow<List<Item>>
 
