@@ -25,6 +25,7 @@ import com.example.inventory.data.ItemsRepository
 
 /**
  * ViewModel to retrieve and update an item from the [ItemsRepository]'s data source.
+ * ViewModel для извлечения и обновления элемента из источника данных [Items Repository].
  */
 class ItemEditViewModel(
     savedStateHandle: SavedStateHandle,
@@ -32,6 +33,7 @@ class ItemEditViewModel(
 
     /**
      * Holds current item ui state
+     * Сохраняет текущее состояние пользовательского интерфейса элемента
      */
     var itemUiState by mutableStateOf(ItemUiState())
         private set
@@ -40,7 +42,7 @@ class ItemEditViewModel(
 
     private fun validateInput(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
         return with(uiState) {
-            name.isNotBlank() && price.isNotBlank() && quantity.isNotBlank()
+            name.isNotBlank() && amount.isNotBlank() && description.isNotBlank()
         }
     }
 }

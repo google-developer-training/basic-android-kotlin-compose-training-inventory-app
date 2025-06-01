@@ -24,6 +24,7 @@ plugins {
 android {
     compileSdk = 35
 
+
     defaultConfig {
         applicationId = "com.example.inventory"
         minSdk = 24
@@ -31,10 +32,12 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+
     }
 
     buildTypes {
@@ -75,6 +78,14 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation("androidx.navigation:navigation-compose:2.8.5")
+
+
+
+    //Room
+    implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
+    ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
+    implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
+    // KSP — это мощный и в то же время простой API для анализа аннотаций Kotlin.
 
     // Testing
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")

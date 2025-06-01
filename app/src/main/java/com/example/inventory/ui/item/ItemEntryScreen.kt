@@ -1,17 +1,8 @@
 /*
- * Copyright (C) 2023 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ Этот экран похож на ItemEditScreen.kt.
+  На обоих экранах есть текстовые поля для ввода сведений о товаре.
+   Этот экран отображается при нажатии на FAB на главном экране.
+   ItemEntryViewModel.kt Это соответствующий ViewModel для этого экрана.
  */
 
 package com.example.inventory.ui.item
@@ -138,8 +129,8 @@ fun ItemInputForm(
             singleLine = true
         )
         OutlinedTextField(
-            value = itemDetails.price,
-            onValueChange = { onValueChange(itemDetails.copy(price = it)) },
+            value = itemDetails.amount,
+            onValueChange = { onValueChange(itemDetails.copy(amount = it)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             label = { Text(stringResource(R.string.item_price_req)) },
             colors = OutlinedTextFieldDefaults.colors(
@@ -153,8 +144,8 @@ fun ItemInputForm(
             singleLine = true
         )
         OutlinedTextField(
-            value = itemDetails.quantity,
-            onValueChange = { onValueChange(itemDetails.copy(quantity = it)) },
+            value = itemDetails.amount,
+            onValueChange = { onValueChange(itemDetails.copy(amount = it)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             label = { Text(stringResource(R.string.quantity_req)) },
             colors = OutlinedTextFieldDefaults.colors(
@@ -181,7 +172,7 @@ private fun ItemEntryScreenPreview() {
     InventoryTheme {
         ItemEntryBody(itemUiState = ItemUiState(
             ItemDetails(
-                name = "Item name", price = "10.00", quantity = "5"
+                name = "Item name", amount = "10.00", description = "ывадо"
             )
         ), onItemValueChange = {}, onSaveClick = {})
     }

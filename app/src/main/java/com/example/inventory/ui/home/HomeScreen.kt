@@ -1,17 +1,8 @@
 /*
- * Copyright (C) 2023 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+  Этот файл представляет собой главный экран или первый экран приложения,
+который содержит компоненты для отображения списка инвентаря.
+На нем есть кнопка FAB +для добавления новых элементов в список.
+Элементы в списке отображаются позже на пути.
  */
 
 package com.example.inventory.ui.home
@@ -60,7 +51,7 @@ object HomeDestination : NavigationDestination {
 }
 
 /**
- * Entry route for Home screen
+ * Entry route for Home screen // Маршрут входа на главный экран
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -177,7 +168,7 @@ private fun InventoryItem(
                 )
             }
             Text(
-                text = stringResource(R.string.in_stock, item.quantity),
+                text = stringResource(R.string.description, item.description),
                 style = MaterialTheme.typography.titleMedium
             )
         }
@@ -189,7 +180,7 @@ private fun InventoryItem(
 fun HomeBodyPreview() {
     InventoryTheme {
         HomeBody(listOf(
-            Item(1, "Game", 100.0, 20), Item(2, "Pen", 200.0, 30), Item(3, "TV", 300.0, 50)
+            Item(1, "Бананы", 100, "asdf"), Item(2, "Pen", 200, "dfg"), Item(3, "TV", 300, "vbn")
         ), onItemClick = {})
     }
 }
@@ -207,7 +198,10 @@ fun HomeBodyEmptyListPreview() {
 fun InventoryItemPreview() {
     InventoryTheme {
         InventoryItem(
-            Item(1, "Game", 100.0, 20),
+            Item(
+                1, "Жилье", 27000,
+                description = "Оплата 16-23 числа"
+            ),
         )
     }
 }

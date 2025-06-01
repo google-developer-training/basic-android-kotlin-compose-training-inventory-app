@@ -25,11 +25,13 @@ import java.text.NumberFormat
 
 /**
  * ViewModel to validate and insert items in the Room database.
+ * ViewModel для проверки и вставки элементов в базу данных комнат.
  */
 class ItemEntryViewModel : ViewModel() {
 
     /**
      * Holds current item ui state
+     * Сохраняет текущее состояние пользовательского интерфейса элемента
      */
     var itemUiState by mutableStateOf(ItemUiState())
         private set
@@ -37,6 +39,9 @@ class ItemEntryViewModel : ViewModel() {
     /**
      * Updates the [itemUiState] with the value provided in the argument. This method also triggers
      * a validation for input values.
+     *
+     * Обновляет на значение, указанное в аргументе. Этот метод также запускает
+     * проверку для входных значений.
      */
     fun updateUiState(itemDetails: ItemDetails) {
         itemUiState =
@@ -45,13 +50,14 @@ class ItemEntryViewModel : ViewModel() {
 
     private fun validateInput(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
         return with(uiState) {
-            name.isNotBlank() && price.isNotBlank() && quantity.isNotBlank()
+            name.isNotBlank() && amount.isNotBlank() && description.isNotBlank()
         }
     }
 }
 
 /**
  * Represents Ui State for an Item.
+ * Представляет состояние пользовательского интерфейса для элемента.
  */
 data class ItemUiState(
     val itemDetails: ItemDetails = ItemDetails(),
@@ -61,28 +67,31 @@ data class ItemUiState(
 data class ItemDetails(
     val id: Int = 0,
     val name: String = "",
-    val price: String = "",
-    val quantity: String = "",
+    val amount: String = "",
+    val description: String = "",
 )
 
 /**
- * Extension function to convert [ItemDetails] to [Item]. If the value of [ItemDetails.price] is
- * not a valid [Double], then the price will be set to 0.0. Similarly if the value of
- * [ItemDetails.quantity] is not a valid [Int], then the quantity will be set to 0
+ * Дополнительная функция для преобразования  [ItemDetails] в [Item].
+ * Если значение параметра [ItemDetails.price] равно
+ * недопустимому [Double], то цена будет установлена равной 0.0.
+ * Аналогично, если значение параметра [ItemDetails.amount] не является допустимым значением [Int],
+ * тогда для значения amount будет установлено значение 0
  */
 fun ItemDetails.toItem(): Item = Item(
     id = id,
     name = name,
-    price = price.toDoubleOrNull() ?: 0.0,
-    quantity = quantity.toIntOrNull() ?: 0
+    amount = amount.toIntOrNull() ?: 0,
+    description = description.takeIf { it is String && it.toIntOrNull() == null } ?: "описание"
 )
 
 fun Item.formatedPrice(): String {
-    return NumberFormat.getCurrencyInstance().format(price)
+    return NumberFormat.getCurrencyInstance().format(amount)
 }
 
 /**
  * Extension function to convert [Item] to [ItemUiState]
+ * Функция расширения для преобразования  [Item] в [ItemUiState]
  */
 fun Item.toItemUiState(isEntryValid: Boolean = false): ItemUiState = ItemUiState(
     itemDetails = this.toItemDetails(),
@@ -95,6 +104,6 @@ fun Item.toItemUiState(isEntryValid: Boolean = false): ItemUiState = ItemUiState
 fun Item.toItemDetails(): ItemDetails = ItemDetails(
     id = id,
     name = name,
-    price = price.toString(),
-    quantity = quantity.toString()
+    amount = amount.toString(),
+    description = description.toString()
 )
