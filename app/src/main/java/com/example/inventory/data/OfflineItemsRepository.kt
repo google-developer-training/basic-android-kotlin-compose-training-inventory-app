@@ -14,6 +14,23 @@
  * limitations under the License.
  */
 
+
+/*
+объяснения по этому файлу тут:
+https://developer.android.com/codelabs/basic-android-kotlin-compose-persisting-data-room?continue=https%3A%2F%2Fdeveloper.android.com%2Fcourses%2Fpathways%2Fandroid-basics-compose-unit-6-pathway-2%23codelab-https%3A%2F%2Fdeveloper.android.com%2Fcodelabs%2Fbasic-android-kotlin-compose-persisting-data-room#7
+*/
 package com.example.inventory.data
 
-class OfflineItemsRepository : ItemsRepository
+import kotlinx.coroutines.flow.Flow
+
+class OfflineItemsRepository(private val itemDao: ItemDao) : ItemsRepository {
+    override fun getAllItemsStream(): Flow<List<Item>> = itemDao.getAllItems()
+
+    override fun getItemStream(id: Int): Flow<Item?> = itemDao.getItem(id)
+
+    override suspend fun insertItem(item: Item) = itemDao.insert(item)
+
+    override suspend fun deleteItem(item: Item) = itemDao.delete(item)
+
+    override suspend fun updateItem(item: Item) = itemDao.update(item)
+}

@@ -21,26 +21,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.inventory.data.Item
+import com.example.inventory.data.ItemsRepository
 import java.text.NumberFormat
 
 /**
- * ViewModel to validate and insert items in the Room database.
- * ViewModel для проверки и вставки элементов в базу данных комнат.
+ * ViewModel для проверки и вставки элементов в базу данных Room.<br> <br><br>
+ *
+ * Функция расширения ItemDetails.toItem() преобразует объект состояния ItemUiState пользовательского интерфейса в тип сущности Item.<br>
+ * Функция расширения Item.toItemUiState() преобразует объект Item Room в тип состояния ItemUiState UI.<br>
+ * Функция расширения Item.toItemDetails() преобразует объект Item Room в ItemDetails.
  */
-class ItemEntryViewModel : ViewModel() {
+
+class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewModel() {
 
     /**
-     * Holds current item ui state
      * Сохраняет текущее состояние пользовательского интерфейса элемента
      */
     var itemUiState by mutableStateOf(ItemUiState())
         private set
 
     /**
-     * Updates the [itemUiState] with the value provided in the argument. This method also triggers
-     * a validation for input values.
-     *
-     * Обновляет на значение, указанное в аргументе. Этот метод также запускает
+     * Обновляет [itemUiState] значением, указанным в аргументе. Этот метод также запускает
      * проверку для входных значений.
      */
     fun updateUiState(itemDetails: ItemDetails) {
@@ -48,15 +49,29 @@ class ItemEntryViewModel : ViewModel() {
             ItemUiState(itemDetails = itemDetails, isEntryValid = validateInput(itemDetails))
     }
 
+    /**
+     * Проверяет, не пусты ли поля name, price, и quantity. <br><br>
+     *
+     * Тут детали:
+     * <a href="https://developer.android.com/codelabs/basic-android-kotlin-compose-persisting-data-room?continue=https%3A%2F%2Fdeveloper.android.com%2Fcourses%2Fpathways%2Fandroid-basics-compose-unit-6-pathway-2%23codelab-https%3A%2F%2Fdeveloper.android.com%2Fcodelabs%2Fbasic-android-kotlin-compose-persisting-data-room#8">Добавьте функцию сохранения</a>
+     *
+     */
     private fun validateInput(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
         return with(uiState) {
             name.isNotBlank() && amount.isNotBlank() && description.isNotBlank()
         }
     }
+
+    suspend fun saveItem() {
+        if (validateInput()) {
+            // Здесь сохраняете itemDetails в базу данных
+            itemsRepository.insertItem(itemUiState.itemDetails.toItem())
+        }
+    }
+
 }
 
 /**
- * Represents Ui State for an Item.
  * Представляет состояние пользовательского интерфейса для элемента.
  */
 data class ItemUiState(
@@ -90,8 +105,7 @@ fun Item.formatedPrice(): String {
 }
 
 /**
- * Extension function to convert [Item] to [ItemUiState]
- * Функция расширения для преобразования  [Item] в [ItemUiState]
+ * Функция расширения для преобразования  [Item] в [ItemUiState].
  */
 fun Item.toItemUiState(isEntryValid: Boolean = false): ItemUiState = ItemUiState(
     itemDetails = this.toItemDetails(),
@@ -99,8 +113,8 @@ fun Item.toItemUiState(isEntryValid: Boolean = false): ItemUiState = ItemUiState
 )
 
 /**
- * Extension function to convert [Item] to [ItemDetails]
- */
+ *Функция расширения для преобразования [Item] в [ItemDetails]
+ *  */
 fun Item.toItemDetails(): ItemDetails = ItemDetails(
     id = id,
     name = name,

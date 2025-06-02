@@ -29,29 +29,29 @@ import com.example.inventory.ui.item.ItemEditViewModel
 import com.example.inventory.ui.item.ItemEntryViewModel
 
 /**
- * Provides Factory to create instance of ViewModel for the entire Inventory app
+ * Предоставляет фабрику для создания экземпляра ViewModel для всего приложения Inventory
  */
 object AppViewModelProvider {
     val Factory = viewModelFactory {
-        // Initializer for ItemEditViewModel
+        // Инициализатор для ItemEditViewModel
         initializer {
             ItemEditViewModel(
                 this.createSavedStateHandle()
             )
         }
-        // Initializer for ItemEntryViewModel
+        // Инициализатор для ItemEntryViewModel
         initializer {
-            ItemEntryViewModel()
+            ItemEntryViewModel(inventoryApplication().container.itemsRepository)
         }
 
-        // Initializer for ItemDetailsViewModel
+        // Инициализатор для ItemDetailsViewModel
         initializer {
             ItemDetailsViewModel(
                 this.createSavedStateHandle()
             )
         }
 
-        // Initializer for HomeViewModel
+        // Инициализатор для HomeViewModel
         initializer {
             HomeViewModel()
         }
@@ -59,7 +59,7 @@ object AppViewModelProvider {
 }
 
 /**
- * Extension function to queries for [Application] object and returns an instance of
+ * Функция расширения запрашивает объект [Application] и возвращает экземпляр
  * [InventoryApplication].
  */
 fun CreationExtras.inventoryApplication(): InventoryApplication =
