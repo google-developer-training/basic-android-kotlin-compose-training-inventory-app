@@ -53,7 +53,7 @@ object AppViewModelProvider {
 
         // Инициализатор для HomeViewModel
         initializer {
-            HomeViewModel()
+            HomeViewModel(inventoryApplication().container.itemsRepository)
         }
     }
 }
