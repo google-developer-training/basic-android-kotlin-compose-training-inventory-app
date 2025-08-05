@@ -30,6 +30,19 @@ import com.example.inventory.ui.item.ItemEntryViewModel
 
 /**
  * Предоставляет фабрику для создания экземпляра ViewModel для всего приложения Inventory
+ *
+ * > "В этом коде:
+ * > - *Абстрактный продукт (интерфейс)* — ViewModel, из пакета androidx.lifecycle
+ * > - *Конкретные продукты* — HomeViewModel, ItemEntryViewModel, ItemEditViewModel, ItemDetailsViewModel,
+ * > - *Конкретные создатели* — каждый initializer { ... } с лямбдой,
+ * > - *Абстрактный создатель* — неявно представлен самой идеей фабрики viewModelFactory
+ *
+ * Он эти вьюхи пачкой создаёт?
+ *
+ * нет, не пачкой а по одной, тот который запрашивает в конкретном активити/фрагменте,
+ *
+ * он сохраняется в ViewModelStore и будет жить до уничтожения активити/фрагмента
+ *
  */
 object AppViewModelProvider {
     val Factory = viewModelFactory {
