@@ -25,12 +25,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.inventory.ui.home.HomeDestination
 import com.example.inventory.ui.home.HomeScreen
-import com.example.inventory.ui.item.ItemDetailsDestination
-import com.example.inventory.ui.item.ItemDetailsScreen
-import com.example.inventory.ui.item.ItemEditDestination
-import com.example.inventory.ui.item.ItemEditScreen
-import com.example.inventory.ui.item.ItemEntryDestination
-import com.example.inventory.ui.item.ItemEntryScreen
+import com.example.inventory.ui.task.TaskDetailsDestination
+import com.example.inventory.ui.task.TaskDetailsScreen
+import com.example.inventory.ui.task.ItemEditDestination
+import com.example.inventory.ui.task.ItemEditScreen
+import com.example.inventory.ui.task.ItemEntryDestination
+import com.example.inventory.ui.task.ItemEntryScreen
 
 /**
  * Provides Navigation graph for the application.
@@ -49,7 +49,7 @@ fun InventoryNavHost(
             HomeScreen(
                 navigateToItemEntry = { navController.navigate(ItemEntryDestination.route) },
                 navigateToItemUpdate = {
-                    navController.navigate("${ItemDetailsDestination.route}/${it}")
+                    navController.navigate("${TaskDetailsDestination.route}/${it}")
                 }
             )
         }
@@ -60,13 +60,13 @@ fun InventoryNavHost(
             )
         }
         composable(
-            route = ItemDetailsDestination.routeWithArgs,
-            arguments = listOf(navArgument(ItemDetailsDestination.itemIdArg) {
+            route = TaskDetailsDestination.routeWithArgs,
+            arguments = listOf(navArgument(TaskDetailsDestination.taskIdArg) {
                 type = NavType.IntType
             })
         ) {
-            ItemDetailsScreen(
-                navigateToEditItem = { navController.navigate("${ItemEditDestination.route}/$it") },
+            TaskDetailsScreen(
+                navigateToEditTask = { navController.navigate("${ItemEditDestination.route}/$it") },
                 navigateBack = { navController.navigateUp() }
             )
         }

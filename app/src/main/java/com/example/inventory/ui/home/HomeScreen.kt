@@ -1,52 +1,25 @@
-/*
- * Copyright (C) 2023 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.example.inventory.ui.home
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.DismissDirection
+import androidx.compose.material.DismissState
+import androidx.compose.material.DismissValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.rememberDismissState
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
@@ -57,20 +30,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.inventory.InventoryTopAppBar
 import com.example.inventory.R
-import com.example.inventory.data.Item
+import com.example.inventory.data.Task
 import com.example.inventory.ui.AppViewModelProvider
-import com.example.inventory.ui.item.formatedPrice
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.theme.InventoryTheme
+import kotlinx.coroutines.launch
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
     override val titleRes = R.string.app_name
 }
 
-/**
- * Entry route for Home screen
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -82,6 +52,9 @@ fun HomeScreen(
     val homeUiState by viewModel.homeUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -91,6 +64,7 @@ fun HomeScreen(
                 scrollBehavior = scrollBehavior
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = navigateToItemEntry,
@@ -101,17 +75,23 @@ fun HomeScreen(
                             .calculateEndPadding(LocalLayoutDirection.current)
                     )
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.item_entry_title)
-                )
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.task_entry_title))
             }
         },
     ) { innerPadding ->
         HomeBody(
-            itemList = homeUiState.itemList,
-            onItemClick = navigateToItemUpdate,
-            modifier = modifier.fillMaxSize(),
+            taskList = homeUiState.taskList,
+            onTaskClick = navigateToItemUpdate,
+            onDelete = { task ->
+                viewModel.delete(task)
+                scope.launch {
+                    val res = snackbarHostState.showSnackbar(
+                        "已刪除 ${task.name}", actionLabel = "復原", duration = SnackbarDuration.Short
+                    )
+                    if (res == SnackbarResult.ActionPerformed) viewModel.insert(task)
+                }
+            },
+            modifier = Modifier.fillMaxSize(),
             contentPadding = innerPadding,
         )
     }
@@ -119,26 +99,25 @@ fun HomeScreen(
 
 @Composable
 private fun HomeBody(
-    itemList: List<Item>,
-    onItemClick: (Int) -> Unit,
+    taskList: List<Task>,
+    onTaskClick: (Int) -> Unit,
+    onDelete: (Task) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier,
-    ) {
-        if (itemList.isEmpty()) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
+        if (taskList.isEmpty()) {
             Text(
-                text = stringResource(R.string.no_item_description),
+                stringResource(R.string.no_task_description),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(contentPadding),
+                modifier = Modifier.padding(contentPadding)
             )
         } else {
             InventoryList(
-                itemList = itemList,
-                onItemClick = { onItemClick(it.id) },
+                taskList = taskList,
+                onItemClick = { onTaskClick(it.id) },
+                onDelete = onDelete,
                 contentPadding = contentPadding,
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
             )
@@ -148,80 +127,102 @@ private fun HomeBody(
 
 @Composable
 private fun InventoryList(
-    itemList: List<Item>,
-    onItemClick: (Item) -> Unit,
+    taskList: List<Task>,
+    onItemClick: (Task) -> Unit,
+    onDelete: (Task) -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = contentPadding
-    ) {
-        items(items = itemList, key = { it.id }) { item ->
-            InventoryItem(item = item,
-                modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.padding_small))
-                    .clickable { onItemClick(item) })
-        }
-    }
-}
-
-@Composable
-private fun InventoryItem(
-    item: Item, modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier, elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large)),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_small))
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = item.name,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-                Spacer(Modifier.weight(1f))
-                Text(
-                    text = item.formatedPrice(),
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-            Text(
-                text = stringResource(R.string.in_stock, item.quantity),
-                style = MaterialTheme.typography.titleMedium
+    LazyColumn(modifier = modifier, contentPadding = contentPadding) {
+        items(taskList, key = { it.id }) { task ->
+            DismissibleTask(
+                task = task,
+                onDelete = onDelete,
+                onClick = onItemClick,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
             )
         }
     }
 }
 
-@Preview(showBackground = true)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-fun HomeBodyPreview() {
-    InventoryTheme {
-        HomeBody(listOf(
-            Item(1, "Game", 100.0, 20), Item(2, "Pen", 200.0, 30), Item(3, "TV", 300.0, 50)
-        ), onItemClick = {})
+fun DismissibleTask(
+    task: Task,
+    onDelete: (Task) -> Unit,
+    onClick: (Task) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val dismissState = rememberDismissState(confirmStateChange = { newState: DismissValue ->
+        if (newState == DismissValue.DismissedToEnd || newState == DismissValue.DismissedToStart) {
+            onDelete(task)
+            true
+        } else false
+    })
+
+    SwipeToDismiss(
+        state = dismissState,
+        background = { SwipeBackground(dismissState) },
+        dismissContent = {
+            InventoryItem(task, modifier.clickable { onClick(task) })
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun SwipeBackground(state: DismissState) {
+    val bgColor by animateColorAsState(
+        if (state.targetValue == DismissValue.Default) MaterialTheme.colorScheme.surfaceVariant
+        else MaterialTheme.colorScheme.errorContainer
+    )
+    val alignment = when (state.dismissDirection) {
+        DismissDirection.StartToEnd -> Alignment.CenterStart
+        DismissDirection.EndToStart -> Alignment.CenterEnd
+        else -> Alignment.Center
+    }
+    Box(
+        Modifier.fillMaxWidth().height(64.dp).background(bgColor).padding(horizontal = 20.dp),
+        contentAlignment = alignment
+    ) {
+        Icon(Icons.Default.Delete, contentDescription = null,
+            tint = MaterialTheme.colorScheme.onErrorContainer)
+    }
+}
+
+@Composable
+private fun InventoryItem(task: Task, modifier: Modifier = Modifier) {
+    val cardColor = when (task.priority.lowercase()) {
+        "high" -> MaterialTheme.colorScheme.errorContainer
+        "medium" -> Color(0xFFFFF9C4)
+        "low" -> Color(0xFFC8E6C9)
+        else -> MaterialTheme.colorScheme.surface
+    }
+    Card(
+        modifier,
+        elevation = CardDefaults.cardElevation(2.dp),
+        colors = CardDefaults.cardColors(containerColor = cardColor)
+    ) {
+        Column(
+            Modifier.padding(dimensionResource(id = R.dimen.padding_large)),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_small))
+        ) {
+            Row(Modifier.fillMaxWidth()) {
+                Text(task.name, style = MaterialTheme.typography.titleLarge)
+                Spacer(Modifier.weight(1f))
+                Text(stringResource(R.string.in_stock, task.priority), style = MaterialTheme.typography.titleMedium)
+            }
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun HomeBodyEmptyListPreview() {
+fun PreviewHomeBody() {
     InventoryTheme {
-        HomeBody(listOf(), onItemClick = {})
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun InventoryItemPreview() {
-    InventoryTheme {
-        InventoryItem(
-            Item(1, "Game", 100.0, 20),
+        HomeBody(
+            listOf(Task(1, "Task1", "High"), Task(2, "Task2", "Medium"), Task(3, "Task3", "Low")),
+            onTaskClick = {}, onDelete = {}
         )
     }
 }

@@ -14,25 +14,26 @@
   ~ limitations under the License.
   -->
 <resources>
-    <string name="app_name">Inventory</string>
+    <string name="app_name">To Do List</string>
     <string name="attention">Attention</string>
     <string name="back_button">Back</string>
     <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
     <string name="delete_question">Are you sure you want to delete?</string>
-    <string name="no_item_description">Oops!\nNo items in the inventory.\nTap + to add.</string>
-    <string name="edit_item_title">Edit Item</string>
-    <string name="item">Item</string>
-    <string name="item_detail_title">Item Details</string>
-    <string name="item_entry_title">Add Item</string>
-    <string name="item_name_req">Item Name*</string>
-    <string name="item_price_req">Item Price*</string>
+    <string name="no_task_description">Oops!\nNo tasks in the lists.\nTap + to add.</string>
+    <string name="edit_task_title">Edit Task</string>
+    <string name="task">Task</string>
+    <string name="task_detail_title">Task Details</string>
+    <string name="task_entry_title">Add Task</string>
+    <string name="task_name_req">Task Name*</string>
     <string name="no">No</string>
-    <string name="price">Price</string>
-    <string name="quantity_in_stock">Quantity in stock</string>
-    <string name="in_stock">%d in stock</string>
-    <string name="quantity_req">Quantity in Stock*</string>
+    <string name="priority_level_show">Priority level</string>
+    <string name="in_stock">Priority %s</string>
+    <string name="priority_level">Priority level*</string>
     <string name="save_action">Save</string>
     <string name="sell">Sell</string>
     <string name="yes">Yes</string>
     <string name="required_fields">*required fields</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">confirm</string>
 </resources>

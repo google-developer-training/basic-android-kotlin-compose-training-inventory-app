@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.inventory.ui.item
+package com.example.inventory.ui.task
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,17 +22,17 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.inventory.data.ItemsRepository
+import com.example.inventory.data.TasksRepository
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel to retrieve and update an item from the [ItemsRepository]'s data source.
+ * ViewModel to retrieve and update an item from the [TasksRepository]'s data source.
  */
-class ItemEditViewModel(
+class TaskEditViewModel(
     savedStateHandle: SavedStateHandle,
-    private val itemsRepository: ItemsRepository
+    private val tasksRepository: TasksRepository
 ) : ViewModel() {
 
     /**
@@ -45,7 +45,7 @@ class ItemEditViewModel(
 
     init {
         viewModelScope.launch {
-            itemUiState = itemsRepository.getItemStream(itemId)
+            itemUiState = tasksRepository.getTaskStream(itemId)
                 .filterNotNull()
                 .first()
                 .toItemUiState(true)
@@ -53,11 +53,11 @@ class ItemEditViewModel(
     }
 
     /**
-     * Update the item in the [ItemsRepository]'s data source
+     * Update the item in the [TasksRepository]'s data source
      */
     suspend fun updateItem() {
-        if (validateInput(itemUiState.itemDetails)) {
-            itemsRepository.updateItem(itemUiState.itemDetails.toItem())
+        if (validateInput(itemUiState.taskDetails)) {
+            tasksRepository.updateTask(itemUiState.taskDetails.toTask())
         }
     }
 
@@ -65,14 +65,14 @@ class ItemEditViewModel(
      * Updates the [itemUiState] with the value provided in the argument. This method also triggers
      * a validation for input values.
      */
-    fun updateUiState(itemDetails: ItemDetails) {
+    fun updateUiState(taskDetails: TaskDetails) {
         itemUiState =
-            ItemUiState(itemDetails = itemDetails, isEntryValid = validateInput(itemDetails))
+            ItemUiState(taskDetails = taskDetails, isEntryValid = validateInput(taskDetails))
     }
 
-    private fun validateInput(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
+    private fun validateInput(uiState: TaskDetails = itemUiState.taskDetails): Boolean {
         return with(uiState) {
-            name.isNotBlank() && price.isNotBlank() && quantity.isNotBlank()
+            name.isNotBlank() && priority.isNotBlank()
         }
     }
 }

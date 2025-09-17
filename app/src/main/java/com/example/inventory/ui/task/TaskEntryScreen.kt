@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package com.example.inventory.ui.item
+package com.example.inventory.ui.task
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -30,14 +34,18 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -47,12 +55,10 @@ import com.example.inventory.ui.AppViewModelProvider
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.theme.InventoryTheme
 import kotlinx.coroutines.launch
-import java.util.Currency
-import java.util.Locale
 
 object ItemEntryDestination : NavigationDestination {
     override val route = "item_entry"
-    override val titleRes = R.string.item_entry_title
+    override val titleRes = R.string.task_entry_title
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -101,7 +107,7 @@ fun ItemEntryScreen(
 @Composable
 fun ItemEntryBody(
     itemUiState: ItemUiState,
-    onItemValueChange: (ItemDetails) -> Unit,
+    onItemValueChange: (TaskDetails) -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -110,7 +116,7 @@ fun ItemEntryBody(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_large))
     ) {
         ItemInputForm(
-            itemDetails = itemUiState.itemDetails,
+            taskDetails = itemUiState.taskDetails,
             onValueChange = onItemValueChange,
             modifier = Modifier.fillMaxWidth()
         )
@@ -127,19 +133,22 @@ fun ItemEntryBody(
 
 @Composable
 fun ItemInputForm(
-    itemDetails: ItemDetails,
+    taskDetails: TaskDetails,
     modifier: Modifier = Modifier,
-    onValueChange: (ItemDetails) -> Unit = {},
+    onValueChange: (TaskDetails) -> Unit = {},
     enabled: Boolean = true
+
 ) {
+    val priorities = listOf("High", "Medium", "Low")
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
     ) {
         OutlinedTextField(
-            value = itemDetails.name,
-            onValueChange = { onValueChange(itemDetails.copy(name = it)) },
-            label = { Text(stringResource(R.string.item_name_req)) },
+            value = taskDetails.name,
+            onValueChange = { onValueChange(taskDetails.copy(name = it)) },
+            label = { Text(stringResource(R.string.task_name_req)) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -149,40 +158,41 @@ fun ItemInputForm(
             enabled = enabled,
             singleLine = true
         )
-        OutlinedTextField(
-            value = itemDetails.price,
-            onValueChange = { onValueChange(itemDetails.copy(price = it)) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            label = { Text(stringResource(R.string.item_price_req)) },
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            ),
-            leadingIcon = { Text(Currency.getInstance(Locale.getDefault()).symbol) },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            singleLine = true
-        )
-        OutlinedTextField(
-            value = itemDetails.quantity,
-            onValueChange = { onValueChange(itemDetails.copy(quantity = it)) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            label = { Text(stringResource(R.string.quantity_req)) },
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            ),
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            singleLine = true
-        )
-        if (enabled) {
-            Text(
-                text = stringResource(R.string.required_fields),
-                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_medium))
-            )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = dimensionResource(id = R.dimen.padding_small)),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            priorities.forEach { level ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .weight(1f)
+                        .selectable(
+                            selected = (taskDetails.priority == level),
+                            onClick = { onValueChange(taskDetails.copy(priority = level)) },
+                            role = Role.RadioButton
+                        )
+                ) {
+                    RadioButton(
+                        selected = (taskDetails.priority == level),
+                        onClick = null, // 整個 Row 都可點
+                        enabled = enabled
+                    )
+                    Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.padding_small)))
+                    Text(level,
+                        color = if (level.lowercase() == "high")
+                            MaterialTheme.colorScheme.error //High Red
+                        else if (level.lowercase() == "medium")
+                            Color(0xFFFBC02D) //High Yellow
+                        else
+                            Color(0xFF388E3C) //High Green
+
+                    )
+                }
+            }
         }
     }
 }
@@ -192,8 +202,8 @@ fun ItemInputForm(
 private fun ItemEntryScreenPreview() {
     InventoryTheme {
         ItemEntryBody(itemUiState = ItemUiState(
-            ItemDetails(
-                name = "Item name", price = "10.00", quantity = "5"
+            TaskDetails(
+                name = "Task name",  priority = "LOW"
             )
         ), onItemValueChange = {}, onSaveClick = {})
     }

@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package com.example.inventory.ui.item
+package com.example.inventory.ui.task
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.inventory.data.Item
-import com.example.inventory.data.ItemsRepository
+import com.example.inventory.data.Task
+import com.example.inventory.data.TasksRepository
 import java.text.NumberFormat
 
 /**
  * ViewModel to validate and insert items in the Room database.
  */
-class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewModel() {
+class ItemEntryViewModel(private val tasksRepository: TasksRepository) : ViewModel() {
 
     /**
      * Holds current item ui state
@@ -39,23 +39,23 @@ class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewMod
      * Updates the [itemUiState] with the value provided in the argument. This method also triggers
      * a validation for input values.
      */
-    fun updateUiState(itemDetails: ItemDetails) {
+    fun updateUiState(taskDetails: TaskDetails) {
         itemUiState =
-            ItemUiState(itemDetails = itemDetails, isEntryValid = validateInput(itemDetails))
+            ItemUiState(taskDetails = taskDetails, isEntryValid = validateInput(taskDetails))
     }
 
     /**
-     * Inserts an [Item] in the Room database
+     * Inserts an [Task] in the Room database
      */
     suspend fun saveItem() {
         if (validateInput()) {
-            itemsRepository.insertItem(itemUiState.itemDetails.toItem())
+            tasksRepository.insertTask(itemUiState.taskDetails.toTask())
         }
     }
 
-    private fun validateInput(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
+    private fun validateInput(uiState: TaskDetails = itemUiState.taskDetails): Boolean {
         return with(uiState) {
-            name.isNotBlank() && price.isNotBlank() && quantity.isNotBlank()
+            name.isNotBlank() && priority.isNotBlank()
         }
     }
 }
@@ -64,47 +64,41 @@ class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewMod
  * Represents Ui State for an Item.
  */
 data class ItemUiState(
-    val itemDetails: ItemDetails = ItemDetails(),
+    val taskDetails: TaskDetails = TaskDetails(),
     val isEntryValid: Boolean = false
 )
 
-data class ItemDetails(
+data class TaskDetails(
     val id: Int = 0,
     val name: String = "",
-    val price: String = "",
-    val quantity: String = "",
+    val priority: String = "",
 )
 
 /**
- * Extension function to convert [ItemUiState] to [Item]. If the value of [ItemDetails.price] is
+ * Extension function to convert [ItemUiState] to [Task]. If the value of [TaskDetails.price] is
  * not a valid [Double], then the price will be set to 0.0. Similarly if the value of
  * [ItemUiState] is not a valid [Int], then the quantity will be set to 0
  */
-fun ItemDetails.toItem(): Item = Item(
+fun TaskDetails.toTask(): Task = Task(
     id = id,
     name = name,
-    price = price.toDoubleOrNull() ?: 0.0,
-    quantity = quantity.toIntOrNull() ?: 0
+    priority = priority
 )
 
-fun Item.formatedPrice(): String {
-    return NumberFormat.getCurrencyInstance().format(price)
-}
 
 /**
- * Extension function to convert [Item] to [ItemUiState]
+ * Extension function to convert [Task] to [ItemUiState]
  */
-fun Item.toItemUiState(isEntryValid: Boolean = false): ItemUiState = ItemUiState(
-    itemDetails = this.toItemDetails(),
+fun Task.toItemUiState(isEntryValid: Boolean = false): ItemUiState = ItemUiState(
+    taskDetails = this.toItemDetails(),
     isEntryValid = isEntryValid
 )
 
 /**
- * Extension function to convert [Item] to [ItemDetails]
+ * Extension function to convert [Task] to [TaskDetails]
  */
-fun Item.toItemDetails(): ItemDetails = ItemDetails(
+fun Task.toItemDetails(): TaskDetails = TaskDetails(
     id = id,
     name = name,
-    price = price.toString(),
-    quantity = quantity.toString()
+    priority = priority
 )

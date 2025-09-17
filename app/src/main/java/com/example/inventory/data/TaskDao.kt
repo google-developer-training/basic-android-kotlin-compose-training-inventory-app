@@ -28,22 +28,22 @@ import kotlinx.coroutines.flow.Flow
  * Database access object to access the Inventory database
  */
 @Dao
-interface ItemDao {
+interface TaskDao {
 
-    @Query("SELECT * from items ORDER BY name ASC")
-    fun getAllItems(): Flow<List<Item>>
+    @Query("SELECT * from tasks ORDER BY name ASC")
+    fun getAllItems(): Flow<List<Task>>
 
-    @Query("SELECT * from items WHERE id = :id")
-    fun getItem(id: Int): Flow<Item>
+    @Query("SELECT * from tasks WHERE id = :id")
+    fun getItem(id: Int): Flow<Task>
 
     // Specify the conflict strategy as IGNORE, when the user tries to add an
     // existing Item into the database Room ignores the conflict.
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(item: Item)
+    suspend fun insert(task: Task)
 
     @Update
-    suspend fun update(item: Item)
+    suspend fun update(task: Task)
 
     @Delete
-    suspend fun delete(item: Item)
+    suspend fun delete(task: Task)
 }

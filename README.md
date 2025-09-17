@@ -1,29 +1,83 @@
-Inventory app
+TESTMESSAGE
+
+To Do List app
 ==================================
 
-Solution code for Android Basics with Compose.
 
-Introduction
+
+問題一
 ------------
 
-This app is an Inventory tracking app. Demos how to add, update, sell, and delete items from the local database.
-This app demonstrated the use of Android Jetpack component [Room](https://developer.android.com/training/data-storage/room) database.
-The app also leverages [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel),
-[Flow](https://developer.android.com/kotlin/flow),
-and [Navigation](https://developer.android.com/topic/libraries/architecture/navigation/).
+*clone下來的存貨APP無法開啟* 
 
-Pre-requisites
+## 解決方法
+
+更改虛擬機的版本以及系統
+
+
+
+## 問題二
+
+*變數 函式名 檔案名在重構的過程中有許多問題 或是在修改後不能使用*
+
+## 解決方法
+
+用Git進行版本控制 在每個重大改變前先commit
+
+
+
+## 問題三
+
+*修改 Enity後程式運行會崩潰* 
+
+## 解決方法
+
+查看log cat 找到崩潰原因
+
+```kotlin
+android.database.sqlite.SQLiteException: […]
+no such column: priority (code 1 SQLITE_ERROR):
+ , while compiling: SELECT * FROM tasks ORDER BY name ASC
+```
+
+詢問ChatGPT後是Room的語法問題
+
+```kotlin
+@Database(entities = [Task::class], version = 2, exportSchema = false)
+
+//需要將version改成2
+abstract class AppDatabase : RoomDatabase() {
+ // …
+ companion object {
+ fun create(context: Context): AppDatabase =
+ Room.databaseBuilder(context, AppDatabase::class.java, "app.db")
+ .fallbackToDestructiveMigration() // 直接砍掉舊 DB，重建新結構
+ .build()
+ }
+}
+```
+
+## 問題四
+
+*無法使用swipe元件*
+
+## 解決方法
+
+```kotlin
+ implementation("androidx.compose.material:material:1.8.1")
+```
+
+修改gradle檔 導入相依元件
+
+
+
+
+
+
+
+
+
+   
+
+
 --------------
-
-You need to know:
-- How to create and use composables.
-- How to navigate between composables, and pass data between them.
-- How to use architecture components including ViewModel, Flow, StateFlow and StateUi.
-- How to use coroutines for long-running tasks.
-- SQLite database and the SQLite query language
-
-
-Getting Started
----------------
-
-1. Download and run the app.
