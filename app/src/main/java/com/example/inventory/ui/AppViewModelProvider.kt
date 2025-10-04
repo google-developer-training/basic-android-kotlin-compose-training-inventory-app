@@ -58,9 +58,11 @@ object AppViewModelProvider {
         }
 
         // Инициализатор для ItemDetailsViewModel
+// Инициализатор для ItemDetailsViewModel
         initializer {
             ItemDetailsViewModel(
-                this.createSavedStateHandle()
+                savedStateHandle = this.createSavedStateHandle(),
+                itemsRepository = inventoryApplication().container.itemsRepository
             )
         }
 
