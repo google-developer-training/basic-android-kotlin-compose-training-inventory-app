@@ -30,7 +30,7 @@ import com.example.inventory.ui.item.ItemEntryViewModel
 
 /**
  * Предоставляет фабрику для создания экземпляра ViewModel для всего приложения Inventory
- *
+ *.
  * > "В этом коде:
  * > - *Абстрактный продукт (интерфейс)* — ViewModel, из пакета androidx.lifecycle
  * > - *Конкретные продукты* — HomeViewModel, ItemEntryViewModel, ItemEditViewModel, ItemDetailsViewModel,
