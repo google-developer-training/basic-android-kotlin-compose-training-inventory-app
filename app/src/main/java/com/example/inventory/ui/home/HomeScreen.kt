@@ -126,24 +126,17 @@ private fun HomeBody(
                         horizontalAlignment = Alignment.Start
                     ) {
                         Text(
-                            text = "CASHFLOW",
-                            style = MaterialTheme.typography.headlineMedium,
+                            text = "Денежный поток",
+                            style = MaterialTheme.typography.headlineSmall,
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         Text(
                             text = "${totalAmount} ₽",
-                            style = MaterialTheme.typography.displayLarge,
-                            modifier = Modifier.padding(bottom = 8.dp)
+                            style = MaterialTheme.typography.displaySmall,
+                            modifier = Modifier.padding(bottom = 4.dp)
                         )
                     }
 
-                    // Отображаем мотивационное сообщение справа от суммы кэшфлоу
-                    Text(
-                        text = "Не отвлекаясь по пустякам\n- достигнешь большего.\nСосредоточившись на главном -\nизменишь всё.",
-                        style = MaterialTheme.typography.bodySmall,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
                 }
 
                 // Отображаем BUDGET и EXPENSE
@@ -156,7 +149,7 @@ private fun HomeBody(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(3.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Column(
@@ -169,7 +162,7 @@ private fun HomeBody(
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
                             Text(
-                                text = "BUDGET",
+                                text = "  Доход",
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
@@ -183,7 +176,7 @@ private fun HomeBody(
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
                             Text(
-                                text = "EXPENSE",
+                                text = "Расход",
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
@@ -198,9 +191,9 @@ private fun HomeBody(
                     .padding(horizontal = 16.dp, vertical = 16.dp)
             ) {
                 Text(
-                    text = "TRANSACTIONS",
+                    text = "Транзакции:",
                     style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = 2.dp)
                 )
 
                 InventoryList(
@@ -249,7 +242,7 @@ private fun TransactionItem(
     ) {
         Text(
             text = item.name,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.headlineSmall, // Увеличенный шрифт для названия
             modifier = Modifier.weight(1f)
         )
 
@@ -258,7 +251,7 @@ private fun TransactionItem(
 
         Text(
             text = "$amountText ₽",
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.headlineSmall, // Увеличенный шрифт для суммы
             color = amountColor
         )
     }
