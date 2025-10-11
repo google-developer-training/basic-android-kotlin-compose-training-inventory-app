@@ -9,19 +9,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.ItemsRepository
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel to retrieve and update an item from the [ItemsRepository]'s data source.
- * ViewModel для извлечения и обновления элемента из источника данных [Items Repository].
- */
 class ItemEditViewModel(
     savedStateHandle: SavedStateHandle,
     private val itemsRepository: ItemsRepository
 ) : ViewModel() {
 
-    /**
-     * Holds current item ui state
-     * Сохраняет текущее состояние пользовательского интерфейса элемента
-     */
     var itemUiState by mutableStateOf(ItemUiState())
         private set
 
@@ -54,7 +46,7 @@ class ItemEditViewModel(
 
     private fun validateInput(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
         return with(uiState) {
-            name.isNotBlank() && amount.isNotBlank() && description.isNotBlank()
+            name.isNotBlank() && amount.isNotBlank() // ← description убрано!
         }
     }
 

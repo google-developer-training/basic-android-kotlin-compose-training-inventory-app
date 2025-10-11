@@ -237,7 +237,7 @@ private fun TransactionItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 1.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
