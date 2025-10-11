@@ -22,11 +22,5 @@ class Item(
     val name: String,
     val amount: Int,
     val description: String,
-//    val date: LocalDateTime,
-//    val article: Int
 
-    //    val id: Int = 0,
-    //    val name: String,
-    //    val price: Double,
-    //    val quantity: Int
 )
