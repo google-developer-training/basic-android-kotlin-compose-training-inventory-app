@@ -44,6 +44,11 @@ interface ItemDao {
     // Пусть запрос SQLite возвращает все столбцы из таблицы item в порядке возрастания.
     // Пусть getAllItems() возвращает список Item сущностей в виде Flow.
     // Room обновляет этот Flow список для вас, а это значит, что вам нужно получить данные только один раз.
-    @Query("SELECT * from items ORDER BY name ASC")
+    @Query("""
+        SELECT * FROM items 
+        ORDER BY 
+            CASE WHEN amount >= 0 THEN 0 ELSE 1 END,
+            ABS(amount) DESC
+    """)
     fun getAllItems(): Flow<List<Item>>
 }
