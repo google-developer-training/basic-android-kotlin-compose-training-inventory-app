@@ -86,7 +86,6 @@ fun ItemDetailsScreen(
     ) { innerPadding ->
         ItemDetailsBody(
             itemDetailsUiState = uiState,
-            onSellItem = { /* TODO */ },
             onDelete = {
                 viewModel.deleteItem()
                 navigateBack() // Возвращаемся после удаления
@@ -105,7 +104,6 @@ fun ItemDetailsScreen(
 @Composable
 private fun ItemDetailsBody(
     itemDetailsUiState: ItemDetailsUiState,
-    onSellItem: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -119,14 +117,7 @@ private fun ItemDetailsBody(
             item = itemDetailsUiState.itemDetails.toItem(),
             modifier = Modifier.fillMaxWidth()
         )
-        Button(
-            onClick = onSellItem,
-            modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.small,
-            enabled = true
-        ) {
-            Text(stringResource(R.string.sell))
-        }
+
         OutlinedButton(
             onClick = { deleteConfirmationRequired = true },
             shape = MaterialTheme.shapes.small,
@@ -234,7 +225,6 @@ fun ItemDetailsScreenPreview() {
                     description = "Blue ballpoint pen"
                 )
             ),
-            onSellItem = {},
             onDelete = {}
         )
     }
