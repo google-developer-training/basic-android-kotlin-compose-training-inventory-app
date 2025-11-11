@@ -5,27 +5,28 @@
 
   -->
 <resources>
-    <string name="app_name">Inventory</string>
-    <string name="attention">Attention</string>
-    <string name="back_button">Back</string>
-    <string name="delete">Delete</string>
-    <string name="delete_question">Are you sure you want to delete?</string>
-    <string name="no_item_description">Oops!\nNo items in the inventory.\nTap + to add.</string>
-    <string name="edit_item_title">Edit Item</string>
-    <string name="item">Item</string>
-    <string name="item_detail_title">Item Details</string>
-    <string name="item_entry_title">Add Item</string>
-    <string name="item_name_req">Item Name*</string>
-    <string name="item_price_req">Amount*</string>
-    <string name="no">No</string>
-    <string name="price">Price</string>
-    <string name="quantity_in_stock">Quantity in stock</string>
-    <string name="in_stock">%d in stock</string>
-    <string name="quantity_req">Description</string>
-    <string name="save_action">Save</string>
-    <string name="sell">Sell</string>
-    <string name="yes">Yes</string>
-    <string name="required_fields">*required fields</string>
+    <string name="app_name">Кошелёк</string>
+    <string name="attention">Внимание</string>
+    <string name="back_button">Назад</string>
+    <string name="delete">Удалить</string>
+    <string name="delete_question">Вы уверены, что хотите удалить эту транзакцию?</string>
+    <string name="no_item_description">Oops!\nВ инвентаре нет товаров.\nНажмите +, чтобы добавить.</string>
+    <string name="edit_item_title">Редактировать элемент</string>
+    <string name="item">Элемент</string>
+    <string name="item_detail_title">Детали элемента</string>
+    <string name="item_entry_title">Добавить элемент</string>
+    <string name="item_name_req">Название*</string>
+    <string name="item_price_req">Сумма*</string>
+    <string name="no">Нет</string>
+    <string name="price">Цена</string>
+    <string name="quantity_in_stock">Количество на складе</string>
+    <string name="in_stock">%d в наличии</string>
+    <string name="quantity_req">Описание</string>
+    <string name="save_action">Сохранить</string>
+    <string name="sell">Продавать</string>
+    <string name="yes">Да</string>
+    <string name="required_fields">*обязательные для заполнения поля</string>
+
 
 
     <string name="description">Описание: %s</string>

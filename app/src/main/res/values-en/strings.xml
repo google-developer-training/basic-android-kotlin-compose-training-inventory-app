@@ -1,0 +1,34 @@
+<!--
+    <string name="description">Описание: %s</string>
+    %s - подстановка строки (отображается description)
+    %d - подстановка цифры (отображается amount)
+
+  -->
+<resources>
+    <string name="app_name">Wallet</string>
+    <string name="attention">Attention</string>
+    <string name="back_button">Back</string>
+    <string name="delete">Delete</string>
+    <string name="delete_question">Are you sure you want to delete this transaction?</string>
+    <string name="no_item_description">Oops!\nNo items in the inventory.\nTap + to add.</string>
+    <string name="edit_item_title">Edit Item</string>
+    <string name="item">Item</string>
+    <string name="item_detail_title">Item Details</string>
+    <string name="item_entry_title">Add Item</string>
+    <string name="item_name_req">Item Name*</string>
+    <string name="item_price_req">Amount*</string>
+    <string name="no">No</string>
+    <string name="price">Price</string>
+    <string name="quantity_in_stock">Quantity in stock</string>
+    <string name="in_stock">%d in stock</string>
+    <string name="quantity_req">Description</string>
+    <string name="save_action">Save</string>
+    <string name="sell">Sell</string>
+    <string name="yes">Yes</string>
+    <string name="required_fields">*required fields</string>
+
+
+
+    <string name="description">Описание: %s</string>
+
+</resources>
