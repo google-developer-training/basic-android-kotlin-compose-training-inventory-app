@@ -85,5 +85,5 @@ dependencies {
     //Room
     implementation("androidx.room:room-runtime:2.8.3")
     ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
-    implementation("anroidx.room:room-ktx:${rootProject.extra["room_version"]}")
+//    implementation("android.room:room-ktx:${rootProject.extra["room_version"]}")
 }
