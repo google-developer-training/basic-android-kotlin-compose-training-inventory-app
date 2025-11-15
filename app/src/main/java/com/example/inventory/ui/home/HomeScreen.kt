@@ -146,7 +146,8 @@ private fun InventoryList(
             InventoryItem(item = item,
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.padding_small))
-                    .clickable { onItemClick(item) })
+                    .clickable { onItemClick(item) }
+            )
         }
     }
 }

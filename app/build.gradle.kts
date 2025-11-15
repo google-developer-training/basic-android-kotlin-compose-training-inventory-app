@@ -19,6 +19,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp") version "2.1.0-1.0.29"
     id("org.jetbrains.kotlin.plugin.compose")
+    //Room
+
 }
 
 android {
@@ -79,4 +81,9 @@ dependencies {
     // Testing
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
+
+    //Room
+    implementation("androidx.room:room-runtime:2.8.3")
+    ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
+//    implementation("android.room:room-ktx:${rootProject.extra["room_version"]}")
 }
